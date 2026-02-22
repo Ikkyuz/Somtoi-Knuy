@@ -3,18 +3,18 @@ const prisma = require('../provider/database/client');
 // 1. เพิ่มห้องพักใหม่
 exports.createRoom = async (req, res) => {
   try {
-    const { roomNo, roomType, price, floor, dormId, description } = req.body;
+    const { roomNo, roomType, price, floor, status } = req.body;
+
     const room = await prisma.room.create({
       data: {
         roomNo,
         roomType,
         price: parseFloat(price),
         floor: parseInt(floor),
-        dormId: parseInt(dormId),
-        description,
-        status: 'AVAILABLE'
+        status
       }
     });
+
     res.status(201).json(room);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -24,9 +24,7 @@ exports.createRoom = async (req, res) => {
 // 2. ดึงข้อมูลห้องพักทั้งหมด
 exports.getAllRooms = async (req, res) => {
   try {
-    const rooms = await prisma.room.findMany({
-      include: { dorm: true }
-    });
+    const rooms = await prisma.room.findMany();
     res.json(rooms);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -37,7 +35,8 @@ exports.getAllRooms = async (req, res) => {
 exports.updateRoom = async (req, res) => {
   try {
     const { id } = req.params;
-    const { roomNo, roomType, price, floor, status, description } = req.body;
+    const { roomNo, roomType, price, floor, status } = req.body;
+
     const room = await prisma.room.update({
       where: { id: parseInt(id) },
       data: {
@@ -45,10 +44,10 @@ exports.updateRoom = async (req, res) => {
         roomType,
         price: price ? parseFloat(price) : undefined,
         floor: floor ? parseInt(floor) : undefined,
-        status,
-        description
+        status
       }
     });
+
     res.json(room);
   } catch (error) {
     res.status(400).json({ error: error.message });
