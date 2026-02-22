@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. ตารางห้องพัก
+model Room {
+  id          Int        @id @default(autoincrement())
+  roomNo      String     @unique @map("room_no")
+  roomType    String     @map("room_type")
+  price       Float
+  status      RoomStatus @default(AVAILABLE)
+  floor       Int
+
+  bookings    Booking[]  // เชื่อมไปประวัติการเข้าพัก
+
+  @@map("rooms")
+}
+
+enum RoomStatus {
+  AVAILABLE    // ว่าง
+  OCCUPIED     // มีคนพักอยู่
+}
+
+// 2. ตารางผู้เช่า (เก็บข้อมูลคนเข้าพัก)
+model User {
+  id          Int      @id @default(autoincrement())
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  email       String   @unique
+  password    String
+  tel         String?
+  role        Role     @default(USER)
+  
+  bookings    Booking[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+// 3. ตารางการเข้าพัก (ใช้สำหรับ Check-in / Check-out)
+model Booking {
+  id           Int       @id @default(autoincrement())
+  roomId       Int       @map("room_id")
+  userId       Int       @map("user_id")
+  checkInDate  DateTime  @default(now()) @map("check_in_date")
+  checkOutDate DateTime? @map("check_out_date") // ถ้ามีค่าแสดงว่า "ย้ายออกแล้ว"
+
+  room         Room      @relation(fields: [roomId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@map("bookings")
+}
