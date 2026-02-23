@@ -7,21 +7,25 @@ router.use(authenticateToken);
 
 router.post('/'
     // #swagger.tags = ['Rooms']
-    // #swagger.consumes = ['multipart/form-data']
-    // #swagger.parameters['roomType'] = { in: 'formData', type: 'string' }
-    // #swagger.parameters['price'] = { in: 'formData', type: 'string' }
-    // #swagger.parameters['floor'] = { in: 'formData', type: 'string' }
-    // #swagger.parameters['status'] = { in: 'formData', type: 'Boolean' }
-    ,authorizeRole(['ADMIN']),
-     roomController.createRoom);
+    // #swagger.summary = 'Create a new room (Admin only)'
+    ,authorizeRole(['ADMIN'])
+    ,roomController.createRoom);
+
 router.get('/',
     // #swagger.tags = ['Rooms']
     // #swagger.summary = 'Get all rooms'
     roomController.getAllRooms);
-router.put('/:id', 
+
+router.put('/:id'
     // #swagger.tags = ['Rooms']
     // #swagger.summary = 'Update a room by ID (Admin only)'
-    roomController.updateRoom);
-router.delete('/:id', roomController.deleteRoom);
+    ,authorizeRole(['ADMIN'])
+    ,roomController.updateRoom);
+    
+router.delete('/:id'
+    // #swagger.tags = ['Rooms']
+    // #swagger.summary = 'Delete a room by ID (Admin only)'
+    ,authorizeRole(['ADMIN'])
+    ,roomController.deleteRoom);
 
 module.exports = router;

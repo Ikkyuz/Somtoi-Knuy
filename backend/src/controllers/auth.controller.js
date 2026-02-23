@@ -10,9 +10,15 @@ exports.register = async (req, res) => {
 
   const userRole = allowedRoles.includes(role) ? role : "USER";
 
-
-
   try {
+    if (!firstName || !lastName) {
+      return res.status(400).json({ error: "First name and last name are required" });
+    }
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
     if (!password || password.length < 4) {
       return res.status(400).json({
         error:
