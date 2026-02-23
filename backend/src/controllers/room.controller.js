@@ -3,7 +3,7 @@ const prisma = require('../provider/database/client');
 // 1. เพิ่มห้องพักใหม่
 exports.createRoom = async (req, res) => {
   try {
-    const { roomNo, roomType, price, floor, status } = req.body;
+    const { roomNo, roomType, price, floor, status, description } = req.body;
 
     const room = await prisma.room.create({
       data: {
@@ -11,6 +11,7 @@ exports.createRoom = async (req, res) => {
         roomType,
         price: parseFloat(price),
         floor: parseInt(floor),
+        description,
         status
       }
     });
@@ -35,7 +36,7 @@ exports.getAllRooms = async (req, res) => {
 exports.updateRoom = async (req, res) => {
   try {
     const { id } = req.params;
-    const { roomNo, roomType, price, floor, status } = req.body;
+    const { roomNo, roomType, price, floor, status, description } = req.body;
 
     const room = await prisma.room.update({
       where: { id: parseInt(id) },
@@ -44,6 +45,7 @@ exports.updateRoom = async (req, res) => {
         roomType,
         price: price ? parseFloat(price) : undefined,
         floor: floor ? parseInt(floor) : undefined,
+        description,
         status
       }
     });

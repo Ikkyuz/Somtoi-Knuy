@@ -57,6 +57,9 @@
                 },
                 "status": {
                   "example": "any"
+                },
+                "description": {
+                  "example": "any"
                 }
               }
             }
@@ -132,6 +135,9 @@
                   "example": "any"
                 },
                 "status": {
+                  "example": "any"
+                },
+                "description": {
                   "example": "any"
                 }
               }

@@ -13,6 +13,7 @@ model Room {
   roomNo      String     @unique @map("room_no")
   roomType    String     @map("room_type")
   price       Float
+  description String?
   status      RoomStatus @default(AVAILABLE)
   floor       Int
 
