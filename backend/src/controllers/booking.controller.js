@@ -2,7 +2,8 @@ const prisma = require('../provider/database/client');
 
 // 1. ลงทะเบียนเข้าพัก (Check-in)
 exports.checkIn = async (req, res) => {
-  const { userId, roomId, checkInDate } = req.body;
+  const { userId, roomId, } = req.body;
+  
 
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -20,8 +21,8 @@ exports.checkIn = async (req, res) => {
         data: {
           userId: parseInt(userId),
           roomId: parseInt(roomId),
-          checkInDate: checkInDate ? new Date(checkInDate) : new Date(),
-          status: 'ACTIVE'
+          
+          
         }
       });
 
@@ -50,7 +51,7 @@ exports.checkOut = async (req, res) => {
       const activeBooking = await tx.booking.findFirst({
         where: {
           roomId: parseInt(roomId),
-          status: 'ACTIVE'
+          
         }
       });
 
@@ -62,7 +63,7 @@ exports.checkOut = async (req, res) => {
       const updatedBooking = await tx.booking.update({
         where: { id: activeBooking.id },
         data: {
-          status: 'COMPLETED',
+          
           checkOutDate: new Date()
         }
       });
@@ -79,5 +80,26 @@ exports.checkOut = async (req, res) => {
     res.json({ message: 'แจ้งย้ายออกเรียบร้อย', booking: result });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+// my-bookings
+exports.getMyBookings = async (req, res) => {
+  try {
+    const userId = parseInt(req.user.userId);
+
+    const bookings = await prisma.booking.findMany({
+      where: { 
+        userId: userId,       // ⭐ ใช้แค่ userId
+        checkOutDate: null 
+      },
+      include: { room: true },
+      orderBy: { checkInDate: "desc" },
+    });
+
+    res.json(bookings); // ต้องเป็น array
+  } catch (error) {
+    console.error("getMyBookings error:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };

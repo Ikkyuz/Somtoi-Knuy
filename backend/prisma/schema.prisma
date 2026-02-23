@@ -16,6 +16,8 @@ model Room {
   description String?
   status      RoomStatus @default(AVAILABLE)
   floor       Int
+  image       String?    // เก็บชื่อไฟล์รูป หรือ path เช่น /uploads/xxx.jpg
+  
 
   bookings    Booking[]  // เชื่อมไปประวัติการเข้าพัก
 

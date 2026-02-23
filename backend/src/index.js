@@ -21,7 +21,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use('/api/rooms', roomRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/auth', authRoutes);
-
+app.use("/uploads", express.static("uploads"));
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });

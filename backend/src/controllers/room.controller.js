@@ -1,10 +1,14 @@
+const e = require('express');
 const prisma = require('../provider/database/client');
 
 // 1. เพิ่มห้องพักใหม่
 exports.createRoom = async (req, res) => {
   try {
-    const { roomNo, roomType, price, floor, status, description } = req.body;
+    
+    const { roomNo, roomType, price, floor, RoomStatus, description } = req.body;
 
+    const image = req.file ? req.file.filename : null;
+    
     const room = await prisma.room.create({
       data: {
         roomNo,
@@ -12,7 +16,8 @@ exports.createRoom = async (req, res) => {
         price: parseFloat(price),
         floor: parseInt(floor),
         description,
-        status
+        image, // ✅ บันทึกรูป
+        RoomStatus
       }
     });
 
@@ -32,6 +37,27 @@ exports.getAllRooms = async (req, res) => {
   }
 };
 
+exports.getRoomById = async (req, res) => {
+  try {
+    console.log("params id:", req.params.id);
+
+    const room = await prisma.room.findUnique({
+      where: { id: Number(req.params.id) },
+    });
+
+    console.log("room:", room);
+
+    if (!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+
+    res.json(room);
+  } catch (error) {
+    console.error("getRoomById error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // 3. แก้ไขข้อมูลห้องพัก
 exports.updateRoom = async (req, res) => {
   try {
@@ -46,6 +72,7 @@ exports.updateRoom = async (req, res) => {
         price: price ? parseFloat(price) : undefined,
         floor: floor ? parseInt(floor) : undefined,
         description,
+        image,
         status
       }
     });
